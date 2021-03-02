@@ -102,7 +102,7 @@ public enum Block {
     }
     
     @SuppressWarnings("deprecation")
-	public static ItemStack getItemStack(Block block) {
+	public ItemStack getItemStack(Block block) {
     	if(block.getData() == 0) {
     		return new ItemStack(block.getMaterial());
     	}

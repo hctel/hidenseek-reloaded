@@ -2,6 +2,7 @@ package be.hctel.revhive.hidev2.objects;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -14,8 +15,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.json.JSONException;
 
+import be.hctel.revhive.hidev2.Hide;
 import be.hctel.revhive.hidev2.enums.Block;
 import be.hctel.revhive.hidev2.enums.HideMap;
+import jdk.jfr.internal.LogLevel;
+import jdk.jfr.internal.LogTag;
+import jdk.jfr.internal.Logger;
 
 public class BlockSelector {
 	private Stat stats;
@@ -31,76 +36,93 @@ public class BlockSelector {
 		System.out.println(map.toString());
 	}
 	public void openBlockSelector(Player player) throws JSONException {
-		Block[] baseBlocks = map.getDefaultBlocks(map);
+		System.out.println("Creating and opening block selector for " + player.getName());
+		ArrayList<Block> baseBlocks = new ArrayList<Block>();
+		for(Block block : map.getDefaultBlocks(map)) {
+			baseBlocks.add(block);
+			System.out.println("Adding block " + block + " to baseBlocks");
+		}
 		ArrayList<Block> customBlocks = stats.getBlocks(player);
-		for (Block block : map.getDisabledBlockstBlocks(map)) {
-			if(customBlocks.contains(block)) customBlocks.remove(block);
+		for(Block block : map.getDisabledBlockstBlocks(map)) {
+			if(customBlocks.contains(block)) customBlocks.remove(block); System.out.println("checking and removing from CustomBlocks if necessary " + block);
 		}
-		int blockSize = baseBlocks.length + customBlocks.size();
+		for(Block block : customBlocks) {
+			if(baseBlocks.contains(block)) baseBlocks.remove(block);
+		}
+		int i = baseBlocks.size() + customBlocks.size() + 9;
 		int invSize = 54;
-		if(blockSize <= 9) {
-			invSize = 18;
+		System.out.println("Setting inv size");
+		if(i > 45) {
+			invSize = 54;
 		}
-		if(blockSize <= 18) {
-			invSize = 27;
+		else if (i <= 45 && i > 36) {
+			invSize = 54;
 		}
-		if(blockSize <= 27) {
-			invSize = 36;
-		}
-		if(blockSize <= 36) {
+		else if (i <= 36 && i > 27) {
 			invSize = 45;
 		}
-		if(blockSize <= 45) {
-			invSize = 54;
+		else if (i <= 27 && i > 18) {
+			invSize = 36;
 		}
-		if(blockSize > 45) {
-			invSize = 54;
+		else if (i <= 18 && i > 9) {
+			invSize = 27;
 		}
-		Inventory inv = Bukkit.createInventory(null, invSize, "Choose your Block!");
-		for(int i = 0; i < baseBlocks.length-1; i++) {
-			ItemStack toAdd = new ItemStack(baseBlocks[i].getMaterial());
-			ItemMeta meta = toAdd.getItemMeta();
-			meta.setDisplayName("§e§l" + baseBlocks[i].getFriendlyName());
+		else if (i <= 9 && i > 0) {
+			invSize = 18;
+		}
+		Inventory inv = Bukkit.createInventory(null, invSize, "Choose your block!");
+		int a = 0;
+		for(Block b : baseBlocks) {
+			ItemStack it = b.getItemStack(b);
+			ItemMeta meta = it.getItemMeta();
+			meta.setDisplayName("§e§l" + b.getFriendlyName());
 			ArrayList<String> lore = new ArrayList<String>();
 			lore.add("");
-			lore.add("§7Will this " + baseBlocks[i].getFriendlyName() + " to");
+			lore.add("§7Will this " + b.getFriendlyName() + " to");
 			lore.add("§7a good choice?");
 			lore.add("");
-			lore.add("§b§lBlock level");
-			lore.add(stats.getBlockLevel(player, baseBlocks[i]));
-			lore.add("§b► Click to select");
+			lore.add(stats.getBlockLevel(player, b) + " §7" + (stats.getRawBlockExperience(player, baseBlocks.get(a))-stats.getBlockLvl(player, baseBlocks.get(a))*50 + "§r/" + (stats.getBlockLvl(player, baseBlocks.get(a))*50)));
+			lore.add("");
 			meta.setLore(lore);
-			toAdd.setItemMeta(meta);
-			inv.setItem(i, toAdd);
+			it.setItemMeta(meta);
+			System.out.println(it.toString());
+			inv.setItem(a, it);
+			System.out.println(a);
+			a++;
 		}
-		if(!customBlocks.isEmpty()) for(int i = 0; i < customBlocks.size()-1; i++) {
-			ItemStack toAdd = new ItemStack(customBlocks.get(i).getMaterial());
-			ItemMeta meta = toAdd.getItemMeta();
-			meta.setDisplayName("§e§l" + customBlocks.get(i).getFriendlyName());
+		int c = 18;
+		for(Block b : customBlocks) {
+			ItemStack it = b.getItemStack(b);
+			ItemMeta meta = it.getItemMeta();
+			meta.setDisplayName("§e§l" + b.getFriendlyName());
 			meta.addEnchant(Enchantment.KNOCKBACK, 1, false);
 			meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+			meta.setLore(new ArrayList<String>());
 			ArrayList<String> lore = new ArrayList<String>();
 			lore.add("");
-			lore.add("§7Will this " + customBlocks.get(i).getFriendlyName() + " to");
+			lore.add("§7Will this " + b.getFriendlyName() + " to");
 			lore.add("§7a good choice?");
 			lore.add("");
-			lore.add("§b§lBlock level");
-			lore.add(stats.getBlockLevel(player, customBlocks.get(i)));
-			lore.add("§b► Click to select");
+			lore.add(stats.getBlockLevel(player, b) + " §7" + (stats.getRawBlockExperience(player, b)-stats.getBlockLvl(player, b)*50 + "§r/" + (stats.getBlockLvl(player, b)*50)));
+			lore.add("");
 			meta.setLore(lore);
-			toAdd.setItemMeta(meta);
-			inv.setItem(i+18, toAdd);
+			it.setItemMeta(meta);
+			System.out.println(it.toString());
+			inv.setItem(c, it);
+			System.out.println(c);
+			c++;
 		}
 		player.openInventory(inv);
+		System.out.println("Inventory opened");
 	}
 	@SuppressWarnings("deprecation")
 	public void listener(InventoryClickEvent e) {
 		Player player = (Player) e.getWhoClicked();
 		Block b;
-		if(e.getCurrentItem() == null) return;
+		if(e.getCurrentItem().equals(null)) return;
 		if(e.getCurrentItem().getData().getData() == 0) b = Block.getByJSONName(e.getCurrentItem().getType().toString());
 		else b = Block.getByJSONName(e.getCurrentItem().getType().toString() + ":" + e.getCurrentItem().getData().getData());
-		block.put(player, b);
+		block.replace(player, b);
 		//manager.addPlayer(player, b);
 		player.closeInventory();
 		player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1f);

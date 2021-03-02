@@ -22,6 +22,8 @@ import be.hctel.revhive.hidev2.objects.GameEventsManager;
 import be.hctel.revhive.hidev2.objects.MapSelector;
 import be.hctel.revhive.hidev2.objects.StartTimer;
 import be.hctel.revhive.hidev2.objects.Stat;
+import be.hctel.revhive.hiveutils.sqlutil.SQLConnection;
+import be.hctel.revhive.revhiveutils.ranksystem.RankManager;
 
 public class Hide extends JavaPlugin {
 	/*
@@ -45,6 +47,12 @@ public class Hide extends JavaPlugin {
 	public static Stat stats;
 	public static StartTimer timer;
 	public static GameEventsManager gameManager;
+	public static RankManager ranks;
+	
+	/*
+	 * Utility variables
+	 */
+	public static String header = "§8▍ §bHide§aAnd§eSeek§8 ▏ ";
 	
 	@Override
 	public void onEnable() {
@@ -53,6 +61,7 @@ public class Hide extends JavaPlugin {
 		loadWorlds();											//Loads the worlds
 		loadSQLCredentials();
 		openConnection(host, port, user, password, database);	//Opens the SQL connection
+		ranks = new RankManager(new SQLConnection(database, user, host, port, password));
 		scheduler = Bukkit.getScheduler();
 		selector = new MapSelector(HideMap.values());			//Defining internal and general variables
 		stats = new Stat(plugin, con);
@@ -114,7 +123,7 @@ public class Hide extends JavaPlugin {
 		getCommand("about").setExecutor(new Commands());
 	}
 	private void loadSQLCredentials() {
-		this.database = getConfig().getString("SQLCred.database");
+		this.database = getConfig().getString("SQL.database");
 		this.user = getConfig().getString("SQLCred.user");
 		this.password = getConfig().getString("SQLCred.pass");
 		this.host = getConfig().getString("SQLCred.host");

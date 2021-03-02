@@ -24,7 +24,7 @@ public class PlayerBlock {
 	public  boolean isSolid = false;
 	public  boolean isAlive = true;
 	private  FallingBlock b;
-	public  ArmorStand a;
+	public  FallingBlock a;
 	public  Role getRole = Role.HIDER;
 	@SuppressWarnings("deprecation")
 	public PlayerBlock(Player player, Block block) {
@@ -38,7 +38,7 @@ public class PlayerBlock {
 	}
 	
 	public void spawnBlock() {
-		a = spawnArmor(player.getLocation(), getBlock);
+		a = spawnFalling(player.getLocation(), getBlock);
 		for(Player p : Bukkit.getServer().getOnlinePlayers()) {
 			if(p != player && p.getGameMode() != GameMode.SPECTATOR) {
 				p.hidePlayer(Hide.plugin, player);
@@ -105,6 +105,7 @@ public class PlayerBlock {
 		return loc.getWorld().spawnFallingBlock(loc, getBlock.getMaterial(), (byte) 0x00);
 	}
 	
+	@SuppressWarnings("unused")
 	private  ArmorStand spawnArmor(Location l, Block block) {
 		Location loc = l.add(0, -1, 0);
 		ArmorStand ar = (ArmorStand) loc.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
@@ -113,10 +114,19 @@ public class PlayerBlock {
 		ar.setBasePlate(false);
 		ar.setCustomName(player.getName());
 		ar.setCustomNameVisible(false);
-		ar.setHelmet(Block.getItemStack(block));
+		ar.setHelmet(block.getItemStack(block));
 		ar.setSmall(false);
+		ar.setCanPickupItems(false);
 		ar.setSilent(true);
 		return ar;
+	}
+	private FallingBlock spawnFalling(Location l, Block block) {
+		Location loc = l.add(0, -1, 0);
+		@SuppressWarnings("deprecation")
+		FallingBlock bl = l.getWorld().spawnFallingBlock(loc, block.getMaterial(), (byte) block.getData());
+		bl.setGravity(false);
+		bl.setInvulnerable(false);
+		return bl;
 	}
 	public static PlayerBlock createPlayerBlock(Player player,Block block) {
 		return new PlayerBlock(player, block);

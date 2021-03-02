@@ -75,9 +75,10 @@ public class Stat {
  	public String getJoinMessage(Player player) throws SQLException {
  		Statement st = con.createStatement();
  		ResultSet rs = st.executeQuery("SELECT * FROM HIDE WHERE UUID = '" + getUUID(player) +"';");
+ 		rs.next();
  		int selected = rs.getInt("usedJoinMessage");
  		if(getUUID(player).equals("3c970d33c96148f99e4b48ac7bea1ac6")) return " §a§lis NOT going to hack!";
- 		if(getUUID(player).equals("df61af011cb5441981ee63c902c1b956")) return " §c§has been working a lot to re-code the game";
+ 		if(getUUID(player).equals("df61af011cb5441981ee63c902c1b956")) return " §c§lhas been working a lot to re-code the game";
  		if(getUUID(player).equals("80c2713d67f94bc683b0ed967302f711")) return " §ais §6going §cto §fbe a §erubik's §9cube";
  		switch(selected) {
  		case 0:
@@ -203,6 +204,9 @@ public class Stat {
  	@SuppressWarnings("deprecation")
 	public ArrayList<Block> getBlocks(Player player) throws JSONException {
  		JSONObject json = jsons.get(player);
+ 		if(json.get("blocks") == null) {
+ 			return new ArrayList<Block>();
+ 		}
  		String in = json.getString("blocks");
  		String blocks[] = in.split(",");
  		ArrayList<Block> out = new ArrayList<Block>();
@@ -215,11 +219,12 @@ public class Stat {
  	}
  	public int getRawBlockExperience(Player player, Block block) throws JSONException {
  		JSONObject json = jsons.get(player).getJSONObject("rawBlockExperience");
+ 		if(!json.has(block.getJsonName(block))) return 0;
  		return json.getInt(block.getJsonName(block));
  	}
- 	private int getBlockLvl(Player player, Block block) throws JSONException {
+ 	public int getBlockLvl(Player player, Block block) throws JSONException {
  		if(jsons.get(player).getJSONObject("blockExperience").has(block.getJsonName(block))) {
- 			JSONObject json = jsons.get(player).getJSONObject("blockExperience");
+ 			JSONObject json = jsons.get(player).getJSONObject("blockExperience");			
  	 		return json.getInt(block.getJsonName(block));
  		} else return 0;
  		
@@ -267,6 +272,7 @@ public class Stat {
 		}
 	}
  	public ArrayList<HideAchievement> getAchievements(Player player) throws JSONException {
+ 		if(jsons.get(player).get("achievements") == null) return new ArrayList<HideAchievement>();
  		ArrayList<HideAchievement> out = new ArrayList<HideAchievement>();
  		JSONObject achievements = jsons.get(player).getJSONObject("achievements");
  		Iterator<String> keys = achievements.keys();
@@ -355,7 +361,10 @@ public class Stat {
  	public void addDeaths(Player player, int deaths) {
  		
  	}
- 	
+ 	public void addWin(Player player) {
+ 		JSONObject json = jsons.get(player);
+ 		json.put("victories", json.getInt("victories")+1);
+ 	}
  	
  	public void save() throws SQLException {
  		Statement st = con.createStatement();
@@ -441,16 +450,16 @@ public class Stat {
  	}
  	private void sendAchievementUnlock(Player player, HideAchievement achievement) {
  		player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.0f, 1.0f);
- 		sendCenteredMessage(player,"§a──────────§b§kFF§r§l Achievement Get! §b§kFF§a──────────");
- 		sendCenteredMessage(player,"");
+ 		player.sendMessage("§a──────────§b§kFF§r§l Achievement Get! §b§kFF§a──────────");
+ 		player.sendMessage("");
  		sendCenteredMessage(player,"§e§l" + achievement.getName(achievement));
  		sendCenteredMessage(player,"§7" + achievement.getDescription(achievement));
- 		sendCenteredMessage(player,"");
- 		sendCenteredMessage(player,"§a───────────────────");
+ 		player.sendMessage("");
+ 		player.sendMessage("       §a─────────────────────────────────────────");
  	}
  	private final static int CENTER_PX = 154;
  	 
- 	public void sendCenteredMessage(Player player, String message){
+ 	public static void sendCenteredMessage(Player player, String message){
  	        if(message == null || message.equals("")) player.sendMessage("");
  	                message = ChatColor.translateAlternateColorCodes('&', message);
  	 

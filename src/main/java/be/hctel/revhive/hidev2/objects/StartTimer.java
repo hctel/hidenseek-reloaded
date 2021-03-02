@@ -15,7 +15,7 @@ public class StartTimer {
 	private BukkitScheduler scheduler;
 	public boolean gameHasStarted = false;
 	public int timeBeforeStart = 35;
-	private int minPlayers = 12;
+	private int minPlayers = 2;
 	
 	public StartTimer(BukkitScheduler scheduler, Plugin plugin) {
 		this.plugin = plugin;
@@ -24,39 +24,56 @@ public class StartTimer {
 			public void run() {
 				if(!gameHasStarted) {
 					if(Bukkit.getOnlinePlayers().size() >= minPlayers) {
-						if(timeBeforeStart > 20) {
-							int time = timeBeforeStart-15;
-							String message = "§aStarting in " + time;
-							for(Player player : Bukkit.getOnlinePlayers()) {
-								player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
-							} 
-						} else if(timeBeforeStart <= 20 && timeBeforeStart > 15) {
-							int time = timeBeforeStart-15;
-							String message = "§aStarting in §c" + time;
+						if(timeBeforeStart == 0) {
+							Hide.gameManager.startGame(Hide.selector.map);
+							gameHasStarted = true;
+							
+						}
+						else if(timeBeforeStart <= 5) {
+							int time = timeBeforeStart;
+							String message = "§eChoose your block §7│ §aStarting in §c" + time;
 							for(Player player : Bukkit.getOnlinePlayers()) {
 								player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
 								player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
-							} 
-						} else if(timeBeforeStart == 15) {
+							}
+						}
+						else if(timeBeforeStart < 15) {
 							int time = timeBeforeStart;
-							Hide.blockSelect = new BlockSelector(Hide.stats, Hide.selector.getMap());
+							String message = "§eChoose your block §7│ §aStarting in " + time;
+							for(Player player : Bukkit.getOnlinePlayers()) {
+								player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
+							}
+							
+						}
+						else if(timeBeforeStart == 15) {
+							int time = timeBeforeStart;
 							String message = "§eChoose your block │ §aStarting in " + time;
 							for(Player player : Bukkit.getOnlinePlayers()) {
 								player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
 								player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 1.0f, 1.0f);
 								Hide.blockSelect.openBlockSelector(player);
 							} 
-						} else if(timeBeforeStart < 15) {
-							int time = timeBeforeStart;
-							String message = "§eChoose your block │ §aStarting in " + time;
+						} 
+						else if(timeBeforeStart <= 20 && timeBeforeStart > 15) {
+							if(timeBeforeStart == 20) {
+								Hide.blockSelect = new BlockSelector(Hide.stats, Hide.selector.getMap());
+							}
+							int time = timeBeforeStart-15;
+							String message = "§aStarting in §c" + time;
+							for(Player player : Bukkit.getOnlinePlayers()) {
+								player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
+								player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1.0f, 1.0f);
+							} 
+						}  
+						else if(timeBeforeStart > 20) {
+							int time = timeBeforeStart-15;
+							String message = "§aStarting in " + time;
 							for(Player player : Bukkit.getOnlinePlayers()) {
 								player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
 							}
-						} else if(timeBeforeStart == 0) {
-							//Hide.gameManager.startGame();
-							gameHasStarted = true;
 							
-						}
+						}  
+						 
 						timeBeforeStart--;
 					} else {
 						if(timeBeforeStart != 35) {
@@ -66,7 +83,7 @@ public class StartTimer {
 								timeBeforeStart = 35;
 							}
 						}
-						int playersremaining = Bukkit.getOnlinePlayers().size() - minPlayers;
+						int playersremaining = minPlayers - Bukkit.getOnlinePlayers().size();
 						String message;
 						if(playersremaining == 1) {
 							 message = "§e" + playersremaining + " player needed to start";
