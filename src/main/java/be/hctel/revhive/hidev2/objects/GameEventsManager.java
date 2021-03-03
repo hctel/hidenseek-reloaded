@@ -90,12 +90,14 @@ public class GameEventsManager {
 									player.sendTitle("§a§l»»»§7§l»", "", 0, 20, 0);
 								}
 							} if (timeInSamePlace.get(player) == 4  && !blocks.get(player).isSolid) {
-								player.spawnParticle(Particle.REDSTONE, player.getLocation(), 20);
+								player.getWorld().spawnParticle(Particle.REDSTONE, player.getLocation(), 20);
 							}
 							timeInSamePlace.replace(player, timeInSamePlace.get(player)+1);
+							lastSecondLocation.replace(player, player.getLocation());
 						} else  {
 							if(blocks.get(player).isSolid) blocks.get(player).notSolid();
 							timeInSamePlace.replace(player, 0);
+							lastSecondLocation.replace(player, player.getLocation());
 						}
 					}
 					if(secondsRemaining == 303) {
@@ -214,6 +216,7 @@ public class GameEventsManager {
 		return roles.get(player);
 	}
 	private void endGame(Role winners) {
+		gameHasStarted = false;
 		if(winners == Role.HIDER) {
 			for(Player player : Bukkit.getOnlinePlayers()) {
 				player.sendTitle("§cGAME OVER!", "§6Hiders won the game!", 0, 40, 70);
