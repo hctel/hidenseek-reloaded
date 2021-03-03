@@ -114,6 +114,15 @@ public class BlockSelector {
 		}
 		player.openInventory(inv);
 		System.out.println("Inventory opened");
+		Random r = new Random();
+		int s1 = r.nextInt(1);
+		if(s1 == 0) {
+			int s2 = r.nextInt(baseBlocks.size()-1);
+			block.put(player, baseBlocks.get(s2));
+		} else {
+			int s2 = r.nextInt(customBlocks.size()-1);
+			block.put(player, customBlocks.get(s2));
+		}
 	}
 	@SuppressWarnings("deprecation")
 	public void listener(InventoryClickEvent e) {
@@ -126,7 +135,7 @@ public class BlockSelector {
 		//manager.addPlayer(player, b);
 		player.closeInventory();
 		player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0f, 1f);
-		player.sendRawMessage("§8▍ §bHide§aAnd§eSeek§8 ▏ §aGood choice! §eSet yout block to " + b.getFriendlyName());
+		player.sendRawMessage("§8▍ §bHide§aAnd§eSeek§8 ▏ §aGood choice! §eSet yout block to §f" + b.getFriendlyName());
 	}
 	public Block getBlock(Player player) {
 		return block.get(player);

@@ -25,6 +25,7 @@ public class PlayerBlock {
 	public  boolean isAlive = true;
 	private  FallingBlock b;
 	public  FallingBlock a;
+	private ArmorStand vehicle;
 	public  Role getRole = Role.HIDER;
 	@SuppressWarnings("deprecation")
 	public PlayerBlock(Player player, Block block) {
@@ -38,7 +39,9 @@ public class PlayerBlock {
 	}
 	
 	public void spawnBlock() {
+		vehicle = spawnArmor(player.getLocation().add(0, -1, 0), Block.FLOWER_POT);
 		a = spawnFalling(player.getLocation(), getBlock);
+		vehicle.addPassenger(a);
 		for(Player p : Bukkit.getServer().getOnlinePlayers()) {
 			if(p != player && p.getGameMode() != GameMode.SPECTATOR) {
 				p.hidePlayer(Hide.plugin, player);
@@ -50,7 +53,7 @@ public class PlayerBlock {
 		Location teleportTo = player.getLocation();
 		teleportTo.setYaw(0);
 		teleportTo.add(0, -1, 0);
-		a.teleport(teleportTo);
+		vehicle.teleport(teleportTo);
 	}
 	public  String getMaterialName() {
 		return material.toString();
@@ -65,6 +68,7 @@ public class PlayerBlock {
 		isSolid = true;
 		player.removePassenger(block);
 		a.remove();
+		vehicle.remove();
 		b = spawn(solidBlockLocation, getBlock);
 		b.setGravity(false);
 		b.setHurtEntities(false);
@@ -114,7 +118,8 @@ public class PlayerBlock {
 		ar.setBasePlate(false);
 		ar.setCustomName(player.getName());
 		ar.setCustomNameVisible(false);
-		ar.setHelmet(block.getItemStack(block));
+		//ar.setHelmet(block.getItemStack(block));
+		ar.setInvulnerable(true);
 		ar.setSmall(false);
 		ar.setCanPickupItems(false);
 		ar.setSilent(true);

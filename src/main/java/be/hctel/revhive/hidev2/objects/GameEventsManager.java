@@ -163,7 +163,7 @@ public class GameEventsManager {
 	}
 	public void killSeeker(Player player, Player hider) {
 		stats.addPoints(hider, 30);
-		Bukkit.broadcastMessage("§8▍ §bHide§aAnd§eSeek§8 ▏ " + "§7Seeker " + Hide.ranks.getRankColorCode(player) + player.getName() + " §6has been killed by " + Hide.ranks.getRankColorCode(hider) + hider.getName());
+		Bukkit.broadcastMessage("§8▍ §bHide§aAnd§eSeek§8 ▏ " + "§6Seeker " + Hide.ranks.getRankColorCode(player) + player.getName() + " §6has been killed by " + Hide.ranks.getRankColorCode(hider) + hider.getName());
 		player.teleport(map.getSpawn());
 	}
 	
@@ -280,7 +280,6 @@ public class GameEventsManager {
 				seeker = onlinePlayers.get(picked);
 			}
 			Bukkit.broadcastMessage("§8▍ §bHide§aAnd§eSeek§8 ▏ " + Hide.stats.getBlockLevel(seeker, playerblock.get(seeker)) + " " + playerblock.get(seeker).getFriendlyName()+ " §9" + seeker.getName() + " §6has been made a seeker §7[seeker struggling]");
-
 		}
 		seekers.add(seeker);
 		roles.put(seeker, Role.SEEKER);

@@ -11,6 +11,7 @@ import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -144,10 +145,15 @@ public class Listeners implements Listener {
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		Hide.gameManager.killSeeker(e.getEntity(), e.getEntity().getKiller());
+		e.setDeathMessage(null);
 		Hide.stats.addPoints(e.getEntity().getKiller(), 30);
 		if(!Hide.stats.getAchievements(e.getEntity().getKiller()).contains(HideAchievement.SEEKER1)) {
 			Hide.stats.unlockAchievement(e.getEntity().getKiller(), HideAchievement.SEEKER1);
 		}
+	}
+	@EventHandler
+	public void blockForm(BlockFormEvent e) {
+		e.setCancelled(true);
 	}
 	
 }
