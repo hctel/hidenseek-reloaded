@@ -1,1 +1,2 @@
 # hidenseek-reloaded
+  **NOTE: OLD PROJECT-NOT WORKING. RE-CODE IN PROGRESS**
